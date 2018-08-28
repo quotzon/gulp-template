@@ -33,7 +33,10 @@ gulp.task('scripts', function(){
 });
 
 gulp.task('css-libs', ['styles'], function(){
-    return gulp.src('app/css/**/*.css') // Выбираем файл для минификации
+    return gulp.src([                           // Выбираем файл для минификации
+        'app/css/**/*.css',
+        '!app/css/**/*.min.css'
+    ])
     .pipe(rename({ suffix: '.min', prefix : '' })) // Добавляем суффикс .min
     .pipe(cleancss( {level: { 1: { specialComments: 0 } } })) // Opt., comment out when debugging
     .pipe(gulp.dest('app/css')) // Выгружаем в папку app/css
@@ -74,11 +77,8 @@ gulp.task('watch', ['browser-sync', 'css-libs', 'scripts'], function(){
     gulp.watch('app/js/**/*.js', browserSync.reload); // Наблюдение за JS файлами в папке js
 });
 
-gulp.task('build', ['clean', 'img', 'sass', 'scripts'], function(){
-    var buildCss = gulp.src([ // Переносим CSS стили в продакшен
-        'app/css/main.css',
-        'app/css/libs.min.css'
-    ])
+gulp.task('build', ['clean', 'img', 'css-libs', 'scripts'], function(){
+    var buildCss = gulp.src('app/css/**/*.css') // Переносим CSS стили в продакшен
     .pipe(gulp.dest('dist/css'));
     
     var buildFonts = gulp.src('app/fonts/**/*') // Переносим шрифты в продакшен
